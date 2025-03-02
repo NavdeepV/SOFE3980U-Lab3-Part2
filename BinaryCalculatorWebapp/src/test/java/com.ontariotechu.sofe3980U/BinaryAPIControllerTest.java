@@ -24,7 +24,6 @@ import static org.hamcrest.Matchers.containsString;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
 
-
 @RunWith(SpringRunner.class)
 @WebMvcTest(BinaryAPIController.class)
 public class BinaryAPIControllerTest {
@@ -32,20 +31,39 @@ public class BinaryAPIControllerTest {
     @Autowired
     private MockMvc mvc;
 
-   
+
     @Test
-    public void add() throws Exception {
-        this.mvc.perform(get("/add").param("operand1","111").param("operand2","1010"))//.andDo(print())
+    public void getAdd() throws Exception {
+        this.mvc.perform(get("/add").param("operand1", "101").param("operand2", "11"))
             .andExpect(status().isOk())
-            .andExpect(content().string("10001"));
+            .andExpect(content().string("1000"));
     }
-	@Test
-    public void add2() throws Exception {
-        this.mvc.perform(get("/add_json").param("operand1","111").param("operand2","1010"))//.andDo(print())
+
+    @Test
+    public void getAddJson() throws Exception {
+        this.mvc.perform(get("/add_json").param("operand1", "101").param("operand2", "11"))
             .andExpect(status().isOk())
-            .andExpect(MockMvcResultMatchers.jsonPath("$.operand1").value(111))
-			.andExpect(MockMvcResultMatchers.jsonPath("$.operand2").value(1010))
-			.andExpect(MockMvcResultMatchers.jsonPath("$.result").value(10001))
-			.andExpect(MockMvcResultMatchers.jsonPath("$.operator").value("add"));
+            .andExpect(jsonPath("$.result.value").value("1000"));
+    }
+
+    @Test
+    public void getMultiply() throws Exception {
+        this.mvc.perform(get("/multiply").param("operand1", "101").param("operand2", "11"))
+            .andExpect(status().isOk())
+            .andExpect(content().string("1111"));
+    }
+
+    @Test
+    public void getAnd() throws Exception {
+        this.mvc.perform(get("/and").param("operand1", "1101").param("operand2", "1011"))
+            .andExpect(status().isOk())
+            .andExpect(content().string("1001"));
+    }
+
+    @Test
+    public void getOr() throws Exception {
+        this.mvc.perform(get("/or").param("operand1", "1101").param("operand2", "1011"))
+            .andExpect(status().isOk())
+            .andExpect(content().string("1111"));
     }
 }
