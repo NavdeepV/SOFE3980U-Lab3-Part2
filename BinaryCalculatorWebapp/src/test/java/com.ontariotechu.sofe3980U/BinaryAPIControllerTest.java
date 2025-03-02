@@ -7,6 +7,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 
 import org.junit.runner.RunWith;
@@ -24,64 +25,45 @@ import static org.assertj.core.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
 
 @RunWith(SpringRunner.class)
-@WebMvcTest(BinaryController.class)
-public class BinaryControllerTest {
+@WebMvcTest(BinaryAPIController.class)
+public class BinaryAPIControllerTest {
 
     @Autowired
     private MockMvc mvc;
 
 
     @Test
-    public void getDefault() throws Exception {
-        this.mvc.perform(get("/")) //.andDo(print())
+    public void getAdd() throws Exception {
+        this.mvc.perform(get("/add").param("operand1", "101").param("operand2", "11"))
             .andExpect(status().isOk())
-            .andExpect(view().name("calculator"))
-                .andExpect(model().attribute("operand1", ""))
-                .andExpect(model().attribute("operand1Focused", false));
+            .andExpect(content().string("1000"));
     }
 
     @Test
-    public void getParameter() throws Exception {
-        this.mvc.perform(get("/").param("operand1", "111"))
+    public void getAddJson() throws Exception {
+        this.mvc.perform(get("/add_json").param("operand1", "101").param("operand2", "11"))
             .andExpect(status().isOk())
-            .andExpect(view().name("calculator"))
-            .andExpect(model().attribute("operand1", "111"))
-            .andExpect(model().attribute("operand1Focused", true));
+            .andExpect(jsonPath("$.result.value").value("1000"));
     }
 
     @Test
-    public void postParameter() throws Exception {
-        this.mvc.perform(post("/").param("operand1", "111").param("operator", "+").param("operand2", "111"))  //.andDo(print())
+    public void getMultiply() throws Exception {
+        this.mvc.perform(get("/multiply").param("operand1", "101").param("operand2", "11"))
             .andExpect(status().isOk())
-            .andExpect(view().name("result"))
-            .andExpect(model().attribute("result", "1110"))
-            .andExpect(model().attribute("operand1", "111"));
+            .andExpect(content().string("1111"));
     }
 
     @Test
-    public void postMultiplication() throws Exception {
-        this.mvc.perform(post("/").param("operand1", "101").param("operator", "*").param("operand2", "11"))
+    public void getAnd() throws Exception {
+        this.mvc.perform(get("/and").param("operand1", "1101").param("operand2", "1011"))
             .andExpect(status().isOk())
-            .andExpect(view().name("result"))
-            .andExpect(model().attribute("result", "1111"))
-            .andExpect(model().attribute("operand1", "101"));
+            .andExpect(content().string("1001"));
     }
 
     @Test
-    public void postAndOperation() throws Exception {
-        this.mvc.perform(post("/").param("operand1", "1101").param("operator", "&").param("operand2", "1011"))
+    public void getOr() throws Exception {
+        this.mvc.perform(get("/or").param("operand1", "1101").param("operand2", "1011"))
             .andExpect(status().isOk())
-            .andExpect(view().name("result"))
-            .andExpect(model().attribute("result", "1001"))
-            .andExpect(model().attribute("operand1", "1101"));
-    }
-    
-    @Test
-    public void postOrOperation() throws Exception {
-        this.mvc.perform(post("/").param("operand1", "1101").param("operator", "|").param("operand2", "1011"))
-            .andExpect(status().isOk())
-            .andExpect(view().name("result"))
-            .andExpect(model().attribute("result", "1111"))
-            .andExpect(model().attribute("operand1", "1101"));
+            .andExpect(content().string("1111"));
     }
 }
